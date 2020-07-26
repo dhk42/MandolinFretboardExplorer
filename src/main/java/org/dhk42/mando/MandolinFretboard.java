@@ -45,13 +45,13 @@ public class MandolinFretboard extends JComponent implements MouseListener {
     int fretWidth = 35;
     int borderSize = 20;
     int fretboardLength = fretWidth * numberOfFrets;
-    int fretboardWidth = 42;
-    Color fretboardForeground = Color.GRAY; //UIManager.getLookAndFeelDefaults().getColor("TextPane.foreground");  //Color.BLACK;
+    int fretboardWidth = 60;//42;
+    Color fretboardForeground = Color.GRAY.brighter(); //UIManager.getLookAndFeelDefaults().getColor("TextPane.foreground");  //Color.BLACK;
     Color fretboardBackground = UIManager.getLookAndFeelDefaults().getColor("TextPane.background");  //Color.WHITE;
     Color inlay = UIManager.getLookAndFeelDefaults().getColor("TextField.shadow");  //Color.LIGHT_GRAY;
-    Color finger = Color.RED.darker();//UIManager.getLookAndFeelDefaults().getColor("TitledBorder.titleColor");  //Color.RED.darker();
+    Color finger = Color.RED;//UIManager.getLookAndFeelDefaults().getColor("TitledBorder.titleColor");  //Color.RED.darker();
     Color root = UIManager.getLookAndFeelDefaults().getColor("TextPane.caretForeground");  //Color.ORANGE;
-    Color textColor = finger;
+    Color textColor = Color.BLACK;
     JPopupMenu menu;
     private Set<FretPosition> fingersDown = new HashSet<>();
     private Set<FretPosition> rootsDown = new HashSet<>();
@@ -209,6 +209,14 @@ public class MandolinFretboard extends JComponent implements MouseListener {
         fingersDown.add(fp);
         repaint();
     }
+    
+    public void toggleFret(FretPosition fp) {
+        if (!fingersDown.contains(fp)) fingerDown(fp);
+        else {
+            fingersDown.remove(fp);
+            repaint();
+        }
+    }
 
     public void rootDown(FretPosition fp) {
         rootsDown.add(fp);
@@ -291,9 +299,9 @@ public class MandolinFretboard extends JComponent implements MouseListener {
 
     private void paintFingersDown(Graphics2D g) {
         g.setColor(finger);
-        int diameter = (int) (fretWidth * 0.8);
+        int diameter = (int) (fretWidth);// * 0.8);
         if (fretboardWidth / 3 < fretWidth) {
-            diameter = (int) (fretboardWidth / 3 * 0.8);
+            diameter = (int) (fretboardWidth / 3);//3 * 0.8);
         }
         for (FretPosition fp : fingersDown) {
             int fret = fp.getFret();
@@ -308,7 +316,7 @@ public class MandolinFretboard extends JComponent implements MouseListener {
                 if (printNames) {
                     String name = FretboardConstants.PREFERRED_NAME_MAP.get(fp);
                     g.setColor(textColor);
-                    drawCenteredString(g, name, centerX, centerY - diameter / 2, null);
+                    drawCenteredString(g, name, centerX, centerY, null);/// 2, null);
 //                    g.drawString(name, centerX - diameter / 2, centerY - diameter / 2);
                     g.setColor(finger);
                 }
@@ -316,12 +324,16 @@ public class MandolinFretboard extends JComponent implements MouseListener {
         }
     }
 
-    public void drawCenteredString(Graphics g, String text, int xToCenterOn, int y, Font font) {
+    public void drawCenteredString(Graphics g, String text, int xToCenterOn, int yToCenterOn, Font font) {
         if (font == null) {
             font = g.getFont();
         }
         FontMetrics metrics = g.getFontMetrics(font);
         int x = xToCenterOn - metrics.stringWidth(text) / 2;
+        
+        //XXX TODO Why is this 3. Can we calculate it better?
+        int y = yToCenterOn + (int)(metrics.getHeight()/3);
+        
         if (font != null) {
             g.setFont(font);
         }
@@ -358,7 +370,7 @@ public class MandolinFretboard extends JComponent implements MouseListener {
             int y = e.getY();
             System.out.println("Double-click at " + x + ", " + y);
             FretPosition f = this.getClosestFret(x, y);
-            this.fingerDown(f);
+            this.toggleFret(f);
         }
     }
 

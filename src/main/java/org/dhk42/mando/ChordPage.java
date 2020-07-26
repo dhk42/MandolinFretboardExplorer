@@ -49,7 +49,8 @@ public class ChordPage extends JPanel {
         setBackground(Color.WHITE);
         if (title != null) {
             JLabel label = new JLabel(title);
-            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setHorizontalAlignment(JLabel.CENTER);
+            label.setBackground(Color.WHITE);
             add(label);
         }
     }
@@ -76,6 +77,7 @@ public class ChordPage extends JPanel {
             throw new PageFullException("Page is full. Max rows is " + maxRows);
         }
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.setBackground(Color.WHITE);
         MandolinFretboard fretboard = new MandolinFretboard();
         for (FretPosition f : fingering) {
             fretboard.fingerDown(f);
